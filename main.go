@@ -8,13 +8,18 @@ import (
 	"github.com/gobwas/ws/wsutil"
 )
 
+var pubsubStart *PubSub
+
 func main() {
 	println("Golang Server Started")
-	http.HandleFunc("/ws-upgrade",wsUpgrade)
+	pubsubStart = InitiatePubSubFeed()
+	http.HandleFunc("/ws-upgrade",pubsubStart.wsUpgrade)
 	http.ListenAndServe(":8080",nil)
+
 }
 
-func wsUpgrade(w http.ResponseWriter, r *http.Request){
+
+func(pbs *PubSub) wsUpgrade(w http.ResponseWriter, r *http.Request){
 	print("Upgrading to WebSockets")
 	conn, wr, _,err := ws.UpgradeHTTP(r,w)
 	if err != nil{
@@ -30,5 +35,4 @@ func wsUpgrade(w http.ResponseWriter, r *http.Request){
 			println("has sub")
 		}
 	}
-
 }
